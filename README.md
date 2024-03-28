@@ -1,7 +1,9 @@
 # Simple Ping Monitor
 
 Hard Pre-Requisite: has curl installed. 
+
 For Telegram Notifications: BotTokenID, ChatID 
+
 Optional: Has timezone configured in "..\usr\share\zoneinfo"
 
 Guide:
