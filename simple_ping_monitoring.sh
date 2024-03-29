@@ -15,7 +15,7 @@ YELLOW='\033[0;33m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-seconds2time () {
+secondsToTime () {
   T=$1
   D=$((T/60/60/24))
   H=$((T/60/60%24))
@@ -33,7 +33,7 @@ seconds2time () {
 sendMessage () {
   MESSAGE="$1"
   
-  curl -s POST https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage -d chat_id=${TELEGRAM_CHAT_ID} -d parse_mode="html" -d text="${MESSAGE}"
+  curl -s POST https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage -d chat_id=${TELEGRAM_CHAT_ID} -d parse_mode="html" -d text="${MESSAGE}" &> /dev/null
 }
 
 update () {
@@ -48,31 +48,25 @@ update () {
     then
       if [[ "${PREV_STATE}" = "DOWN" ]]
       then
-        echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is ${GREEN}UP${NC} again at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}."
-        echo -e "${YELLOW}${IP_NAME}${NC} was ${RED}DOWN${NC} for $(seconds2time ${TIME_ELAPSED})."
-        sendMessage "<b>${IP_NAME}</b> (<i>${IP}</i>) is <b>UP</b> again at: $(TZ=${TIMEZONE} date +"%a %T %d %b %Y"). ${IP_NAME} was DOWN for $(seconds2time ${TIME_ELAPSED})"
+        echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is ${GREEN}UP${NC} again at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}. Was ${RED}DOWN${NC} for $(secondsToTime ${TIME_ELAPSED})."
+        sendMessage "<b>${IP_NAME}</b> (<i>${IP}</i>) is <b>UP</b> again at: $(TZ=${TIMEZONE} date +"%a %T %d %b %Y"). ${IP_NAME} was DOWN for $(secondsToTime ${TIME_ELAPSED})"
         
         IP_STATE[i]="UP"
         STATUS_DURATION[i]=$(date +%s)
       else
-        echo -e "${YELLOW}${IP_NAME}${NC} is still ${GREEN}UP${NC} at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}."
-        echo -e "${YELLOW}${IP_NAME}${NC} has been ${GREEN}UP${NC} for $(seconds2time ${TIME_ELAPSED})."
-        
+        echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is still ${GREEN}UP${NC} at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}. Has been ${GREEN}UP${NC} for $(secondsToTime ${TIME_ELAPSED})." 
       fi
     else
       if [[ "${PREV_STATE}" = "UP" ]]
       then
-        echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is ${RED}DOWN${NC} again at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}."
-        echo -e "${YELLOW}${IP_NAME}${NC} was ${GREEN}UP${NC} for $(seconds2time ${TIME_ELAPSED})."
-        sendMessage "<b>${IP_NAME}</b> (<i>${IP}</i>) is <b>DOWN</b> again at: $(TZ=${TIMEZONE} date +"%a %T %d %b %Y"). ${IP_NAME} was UP for $(seconds2time ${TIME_ELAPSED})"
+        echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is ${RED}DOWN${NC} again at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}. Was ${GREEN}UP${NC} for $(secondsToTime ${TIME_ELAPSED})."
+        sendMessage "<b>${IP_NAME}</b> (<i>${IP}</i>) is <b>DOWN</b> again at: $(TZ=${TIMEZONE} date +"%a %T %d %b %Y"). ${IP_NAME} was UP for $(secondsToTime ${TIME_ELAPSED})"
         
         IP_STATE[i]="DOWN"
         STATUS_DURATION[i]=$(date +%s)
       else
-        echo -e "${YELLOW}${IP_NAME}${NC} is still ${RED}DOWN${NC} at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}."
-        echo -e "${YELLOW}${IP_NAME}${NC} has been ${RED}DOWN${NC} for $(seconds2time ${TIME_ELAPSED})."
-      fi
-      
+        echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is still ${RED}DOWN${NC} at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}. Has been ${RED}DOWN${NC} for $(secondsToTime ${TIME_ELAPSED})."
+      fi      
     fi
   done
   
