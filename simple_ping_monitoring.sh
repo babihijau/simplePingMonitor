@@ -42,10 +42,11 @@ update () {
     IP="${IP_LIST[i]##*/}"
     IP_NAME="${IP_LIST_NAME[i]##*/}"
     PREV_STATE="${IP_STATE[i]}"
-    TIME_ELAPSED=$(($(date +%s)-$STATUS_DURATION))
     
     if ping -c 1 ${IP} &> /dev/null
     then
+      TIME_ELAPSED=$(($(date +%s)-$STATUS_DURATION))
+
       if [[ "${PREV_STATE}" = "DOWN" ]]
       then
         echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is ${GREEN}UP${NC} again at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}. Was ${RED}DOWN${NC} for $(secondsToTime ${TIME_ELAPSED})."
@@ -57,6 +58,8 @@ update () {
         echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is still ${GREEN}UP${NC} at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}. Has been ${GREEN}UP${NC} for $(secondsToTime ${TIME_ELAPSED})." 
       fi
     else
+      TIME_ELAPSED=$(($(date +%s)-$STATUS_DURATION))
+
       if [[ "${PREV_STATE}" = "UP" ]]
       then
         echo -e "${YELLOW}${IP_NAME}${NC} (${IP}) is ${RED}DOWN${NC} again at: ${CYAN}$(TZ=${TIMEZONE} date)${NC}. Was ${GREEN}UP${NC} for $(secondsToTime ${TIME_ELAPSED})."
